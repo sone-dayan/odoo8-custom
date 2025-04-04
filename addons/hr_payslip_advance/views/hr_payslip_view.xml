@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report
+            id="hr_payslip_advance_refund_report_action"
+            model="hr.payslip"
+            string="Detalles de Adelantos"
+            report_type="qweb-pdf"
+            name="hr_payslip_advance.hr_payslip_advance_refund_report"
+            file="hr_payslip_advance.hr_payslip_advance_refund_report"
+        />
+    </data>
+</openerp>

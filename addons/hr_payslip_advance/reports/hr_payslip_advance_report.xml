@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="hr_payslip_advance_report">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="report.external_layout">
+                        <div class="page">
+                            <h2>Adelanto <t t-esc="o.name" /></h2>
+                            <p><strong>Fecha: </strong> <t t-esc="o.date" /></p>
+                            <hr/>
+                            <table class="table table-condensed">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>A nombre de</strong></td>
+                                        <td><p t-esc="o.contract_id.employee_id.name" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Monto</strong></td>
+                                        <td><p t-esc="o.amount" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Folio/Diario</strong></td>
+                                        <td><p t-esc="o.journal_id.name" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <br/>
+                            <br/>
+                            <br/>
+                            <div class="text-right">
+                                <p>________________________</p>
+                                <p><strong>  Firma         </strong></p>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</openerp>

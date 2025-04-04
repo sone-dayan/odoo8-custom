@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <template id="hr_payslip_advance_refund_report">
+            <t t-call="report.html_container">
+                <t t-foreach="payslips" t-as="p">
+                    <t t-call="report.external_layout">
+                        <div class="page">
+                            <h2>Detalles de Adelantos</h2>
+                            <p>Adelantos correspondientes a <t t-esc="p.name" /></p>
+                            <hr />
+
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Fecha</th>
+                                        <th>Referencia</th>
+                                        <th>Descripción</th>
+                                        <th>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="total" t-value="0" />
+
+                                    <tr t-foreach="docs.get_advance_lines(p.id)" t-as="l">
+                                        <td><span t-esc="l_index + 1" /></td>
+                                        <td><span t-esc="l.payslip_advance_id.date" /></td>
+                                        <td><span t-esc="l.payslip_advance_id.name" /></td>
+                                        <td><span t-esc="l.payslip_advance_id.journal_id.name" /></td>
+                                        <td><span t-esc="l.amount" /></td>
+
+                                        <t t-set="total" t-value="total + l.amount" />
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="4"><strong>Total</strong></td>
+                                        <td><strong t-esc="total" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <br/>
+                            <br/>
+                            <br/>
+                            <div class="text-right">
+                                <p>________________________</p>
+                                <p><strong>Firma</strong></p>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</openerp>
