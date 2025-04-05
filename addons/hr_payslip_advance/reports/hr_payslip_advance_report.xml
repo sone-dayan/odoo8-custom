@@ -6,21 +6,21 @@
                 <t t-foreach="docs" t-as="o">
                     <t t-call="report.external_layout">
                         <div class="page">
-                            <h2>Adelanto <t t-esc="o.name" /></h2>
-                            <p><strong>Fecha: </strong> <t t-esc="o.date" /></p>
+                            <h2>Advance Details <t t-esc="o.name" /></h2>
+                            <p><strong>Date: </strong> <t t-esc="o.date" /></p>
                             <hr/>
                             <table class="table table-condensed">
                                 <tbody>
                                     <tr>
-                                        <td><strong>A nombre de</strong></td>
+                                        <td><strong>Employee Name</strong></td>
                                         <td><p t-esc="o.contract_id.employee_id.name" /></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Monto</strong></td>
+                                        <td><strong>Amount</strong></td>
                                         <td><p t-esc="o.amount" /></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Folio/Diario</strong></td>
+                                        <td><strong>Journal Entry</strong></td>
                                         <td><p t-esc="o.journal_id.name" /></td>
                                     </tr>
                                 </tbody>
@@ -31,7 +31,7 @@
                             <br/>
                             <div class="text-right">
                                 <p>________________________</p>
-                                <p><strong>  Firma         </strong></p>
+                                <p><strong>  Signature         </strong></p>
                             </div>
                         </div>
                     </t>

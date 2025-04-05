@@ -29,7 +29,8 @@ class HrPayslipAdvanceReport(models.AbstractModel):
 
         for payslip in payslips:
             if payslip.state != 'done':
-                raise Warning('No hay nóminas procesadas en la que se puedan imprimir los registros de adelantos')
+                raise Warning('There are no processed payslips available to print advance records.')
+
 
         values = {
             'doc_ids': self._ids,

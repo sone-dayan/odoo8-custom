@@ -7,9 +7,9 @@ class HrPayslipAdvance(models.Model):
     _name = 'hr.payslip.advance'
 
     HR_PAYSLIP_ADVANCE_STATUS = [
-        ('draft', 'Borrador'),
-        ('approved', 'Aprovado'),
-        ('disapproved', 'Desaprobado')
+        ('draft', 'Draft'),
+        ('approved', 'Approved'),
+        ('disapproved', 'Disapproved'),
     ]
 
     '''
@@ -19,14 +19,14 @@ class HrPayslipAdvance(models.Model):
 
 
 
-    name = fields.Char(string='Nombre', size=50, default=_get_default_name)
-    amount = fields.Float(string='Monto', digits=(10, 2))
-    date = fields.Date(string='Fecha', required=True, default=lambda self: fields.Date.today())
-    state = fields.Selection(string='Estado', selection=HR_PAYSLIP_ADVANCE_STATUS, default='draft')
-    reason = fields.Char(string='Motivo', size=160)
-    payment_term_id = fields.Many2one(string='Términos de cobro', comodel_name='account.payment.term', required=True)
-    contract_id = fields.Many2one(string='Contrato de Empleado', comodel_name='hr.contract', required=True)
-    journal_id = fields.Many2one(string='Método de pago', comodel_name='account.journal', required=True)
+    name = fields.Char(string='Name', size=50, default=_get_default_name)
+    amount = fields.Float(string='Amount', digits=(10, 2))
+    date = fields.Date(string='Date', required=True, default=lambda self: fields.Date.today())
+    state = fields.Selection(string='State', selection=HR_PAYSLIP_ADVANCE_STATUS, default='draft')
+    reason = fields.Char(string='Reason', size=160)
+    payment_term_id = fields.Many2one(string='Payment Terms', comodel_name='account.payment.term', required=True)
+    contract_id = fields.Many2one(string='Employee Contract', comodel_name='hr.contract', required=True)
+    journal_id = fields.Many2one(string='Payment Method', comodel_name='account.journal', required=True)
     payslip_refund_ids = fields.One2many(comodel_name='hr.payslip.advance.refund', inverse_name='payslip_advance_id')
 
     '''
@@ -58,7 +58,7 @@ class HrPayslipAdvance(models.Model):
             total_unrefunded = advance.mapped(lambda x: total_unrefunded + x.amount)[0]
 
         if total_unrefunded > amount:
-            raise Warning('Límite superado de adelantos para este contrato')
+            raise Warning('Advance limit exceeded for this contract.')
 
     '''
     '''
@@ -82,7 +82,7 @@ class HrPayslipAdvance(models.Model):
         payslip_advance = self.pool.get(self._name).browse(cr, uid, ids, context=context)
 
         if payslip_advance.state == 'approved':
-            return Warning('No se puede modificar un adelanto aprobado')
+            return Warning('You cannot modify an approved advance.')
         
         values['amount_unreconcilied'] = values.get('amount', 0)
 
@@ -94,7 +94,7 @@ class HrPayslipAdvance(models.Model):
         payslip_advance = self.pool.get(self._name).browse(cr, uid, ids, context=context)
 
         if payslip_advance.state == 'approved':
-            return Warning('No se puede borrar un adelando aprobado')
+            return Warning('You cannot delete an approved advance.')
 
         return super(HrPayslipAdvance, self).unlink(cr, uid, ids, context=context)
     
@@ -103,10 +103,10 @@ class HrPayslipAdvance(models.Model):
     @api.one
     def action_approve(self):
         if self.state == 'approved':
-            return Warning('No se puede aprobar un adelanto ya aprobado')
+            return Warning('This advance is already approved.')
 
-        if self.state == 'disapprobed':
-            return Warning('No se puede aprobar un adelato no aprobado')
+        if self.state == 'disapproved':
+            return Warning('You cannot approve a disapproved advance.')
 
         return self.write({
             'amount_unreconcilied': self.amount,
@@ -118,10 +118,10 @@ class HrPayslipAdvance(models.Model):
     @api.one
     def action_disapprove(self):
         if self.state == 'approved':
-            return Warning('No se puede aprobar un adelanto no aprobado')
+            return Warning('You cannot disapprove an approved advance.')
 
-        if self.state == 'disaproved':
-            return Warning('No se puede desaprobar un adelando aprobado')
+        if self.state == 'disapproved':
+            return Warning('This advance is already disapproved.')
 
         return self.write({
             'amount_unreconcilied': self.amount,

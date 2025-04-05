@@ -17,10 +17,10 @@
 			<field name="name">hr.payslip.advance.form</field>
 			<field name="model">hr.payslip.advance</field>
 			<field name="arch" type="xml">
-				<form string="Adelanto">
+				<form string="Advance">
 					<header>
-						<button name="action_approve" states="draft" string="Aprobar" type="object" modifiers="{'invisible': [['state', '!=', 'draft']]}" />
-						<button name="action_disapprove" states="draft" string="No aprobar" type="object" modifiers="{'invisible': [['state', '!=', 'draft']]}" />
+						<button name="action_approve" states="draft" string="Approve" type="object" modifiers="{'invisible': [['state', '!=', 'draft']]}" />
+						<button name="action_disapprove" states="draft" string="Disapprove" type="object" modifiers="{'invisible': [['state', '!=', 'draft']]}" />
 						<field name="state" widget="statusbar" statusbar_visible="draft,approved,disapproved" readonly="1" modifiers="{'readonly': true}" />
 					</header>
 					<sheet>
@@ -42,7 +42,7 @@
 							</group>
 						</group>
 						<notebook>
-							<page string="Montos a cobrar en nóminas">
+							<page string="Installments to Deduct">
 								<field name="payslip_refund_ids" attrs="{'readonly': True}">
 									<tree>
 										<field name="amount"/>
@@ -57,23 +57,23 @@
 		</record>
 
 		<record id="hr_payslip_advance" model="ir.actions.act_window">
-			<field name="name">Adelantos de Empleado</field>
+			<field name="name">Employee Advances</field>
 			<field name="res_model">hr.payslip.advance</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
 			<field name="help" type="html">
 				<p class="oe_view_nocontent_create">
-					Haga click en éste botón para crear un nuevo adelanto
+					Click here to create a new advance
 				</p>
 			</field>
         </record>
 
-		<menuitem id="hr_payslip_advance_all" name="Adelantos de Empleado" parent="hr.menu_hr_main" action="hr_payslip_advance" />
+		<menuitem id="hr_payslip_advance_all" name="Employee Advances" parent="hr.menu_hr_main" action="hr_payslip_advance" />
 
 		<report
             id="hr_payslip_advance_report_action"
             model="hr.payslip.advance"
-            string="Adelantos"
+            string="Advance Report"
             report_type="qweb-pdf"
             name="hr_payslip_advance.hr_payslip_advance_report"
             file="hr_payslip_advance.hr_payslip_advance_report"

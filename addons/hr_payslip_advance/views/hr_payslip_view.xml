@@ -4,7 +4,7 @@
         <report
             id="hr_payslip_advance_refund_report_action"
             model="hr.payslip"
-            string="Detalles de Adelantos"
+            string="Advance Details"
             report_type="qweb-pdf"
             name="hr_payslip_advance.hr_payslip_advance_refund_report"
             file="hr_payslip_advance.hr_payslip_advance_refund_report"
