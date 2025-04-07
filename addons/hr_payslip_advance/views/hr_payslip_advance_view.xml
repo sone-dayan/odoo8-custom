@@ -34,14 +34,14 @@
 
 					<notebook>
 						<page string="Repayment Plan">
-						<field name="line_ids">
-							<tree editable="bottom">
-							<field name="date"/>
-							<field name="amount"/>
-							<field name="state"/>
-							<field name="payslip_id"/>
-							</tree>
-						</field>
+							<field name="line_ids">
+								<tree editable="bottom">
+								<field name="date"/>
+								<field name="amount"/>
+								<field name="state"/>
+								<field name="payslip_id"/>
+								</tree>
+							</field>
 						</page>
 					</notebook>
 
@@ -50,6 +50,21 @@
 						<button string="Confirm" name="confirm" type="object" states="draft" class="oe_primary"/>
           			</footer>
 				</form>
+			</field>
+		</record>
+
+		<!-- Tree View -->
+		<record id="view_hr_payslip_advance_tree" model="ir.ui.view">
+			<field name="name">hr.payslip.advance.tree</field>
+			<field name="model">hr.payslip.advance</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="name"/>
+					<field name="employee_id"/>
+					<field name="date"/>
+					<field name="amount"/>
+					<field name="state"/>
+				</tree>
 			</field>
 		</record>
 		<!-- <record id="hr_payslip_advance_form" model="ir.ui.view">
@@ -97,7 +112,7 @@
 		</record> -->
 
 		<record id="hr_payslip_advance" model="ir.actions.act_window">
-			<field name="name">Employee Advances</field>
+			<field name="name">Salary Advances</field>
 			<field name="res_model">hr.payslip.advance</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
@@ -108,15 +123,15 @@
 			</field>
         </record>
 
-		<menuitem id="hr_payslip_advance_all" name="Employee Advances" parent="hr.menu_hr_main" action="hr_payslip_advance" />
+		<menuitem id="hr_payslip_advance_all" name="Salary Advances" parent="hr.menu_hr_main" action="hr_payslip_advance" />
 
-		<report
+		<!-- <report
             id="hr_payslip_advance_report_action"
             model="hr.payslip.advance"
             string="Advance Report"
             report_type="qweb-pdf"
             name="hr_payslip_advance.hr_payslip_advance_report"
             file="hr_payslip_advance.hr_payslip_advance_report"
-        />
+        /> -->
 	</data>
 </openerp>

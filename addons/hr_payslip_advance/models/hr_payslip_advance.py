@@ -137,7 +137,7 @@ class HrPayslipAdvance(models.Model):
 
     name = fields.Char(string='Advance Number', required=True, default='/')
     short_description = fields.Char(string='Short Description')
-    employee_id = fields.Many2one('hr.employee', string='Employee')
+    employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     contract_id = fields.Many2one('hr.contract', string='Contract')
     date = fields.Date(string='Date', default=fields.Date.today)
     amount = fields.Float(string='Amount', digits=(10, 2))
