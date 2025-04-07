@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
+		<!--Listing All Employee Advances Page-->
 		<record id="hr_payslip_advance_tree" model="ir.ui.view">
 			<field name="name">hr.payslip.advance.tree</field>
 			<field name="model">hr.payslip.advance</field>
@@ -12,8 +13,38 @@
 				</tree>
 			</field>
 		</record>
+		<!--End Listing-->
 
-		<record id="hr_payslip_advance_form" model="ir.ui.view">
+		<!-- FORM Creating a new record-->
+		<record id="view_hr_payslip_advance_form" model="ir.ui.view">
+		<field name="name">hr.payslip.advance.form</field>
+		<field name="model">hr.payslip.advance</field>
+		<field name="arch" type="xml">
+			<form string="Salary Advance">
+			<group>
+				<field name="name"/>
+				<field name="short_description"/>
+				<field name="employee_id"/>
+				<field name="date"/>
+				<field name="amount"/>
+				<field name="generate_lines"/>
+				<field name="monthly_amount"/>
+				<field name="repayment_start_date"/>
+			</group>
+
+			<notebook>
+				<page string="Repayment Plan">
+				<field name="line_ids">
+					<tree editable="bottom">
+					<field name="date"/>
+					<field name="amount"/>
+					<field name="state"/>
+					<field name="payslip_id"/>
+					</tree>
+				</field>
+				</page>
+			</notebook>
+		<!-- <record id="hr_payslip_advance_form" model="ir.ui.view">
 			<field name="name">hr.payslip.advance.form</field>
 			<field name="model">hr.payslip.advance</field>
 			<field name="arch" type="xml">
@@ -41,6 +72,7 @@
 								<field name="reason" />
 							</group>
 						</group>
+
 						<notebook>
 							<page string="Installments to Deduct">
 								<field name="payslip_refund_ids" attrs="{'readonly': True}">
@@ -54,7 +86,7 @@
 					</sheet>
 				</form>
 			</field>
-		</record>
+		</record> -->
 
 		<record id="hr_payslip_advance" model="ir.actions.act_window">
 			<field name="name">Employee Advances</field>
