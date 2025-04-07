@@ -1,4 +1,77 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <!-- Main Form View -->
+    <record id="view_hr_payslip_advance_form" model="ir.ui.view">
+      <field name="name">hr.payslip.advance.form</field>
+      <field name="model">hr.payslip.advance</field>
+      <field name="arch" type="xml">
+        <form string="Salary Advance">
+          <group>
+            <field name="name"/>
+            <field name="short_description"/>
+            <field name="employee_id"/>
+            <field name="date"/>
+            <field name="amount"/>
+            <field name="generate_lines"/>
+            <field name="monthly_amount"/>
+            <field name="repayment_start_date"/>
+          </group>
+
+          <notebook>
+            <page string="Repayment Plan">
+              <field name="line_ids">
+                <tree editable="bottom">
+                  <field name="date"/>
+                  <field name="amount"/>
+                  <field name="state"/>
+                  <field name="payslip_id"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+
+          <footer>
+            <button name="generate_repayment_lines" string="Generate Plan" type="object" class="oe_highlight"/>
+            <button string="Confirm" name="confirm" type="object" states="draft" class="oe_primary"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_hr_payslip_advance_tree" model="ir.ui.view">
+      <field name="name">hr.payslip.advance.tree</field>
+      <field name="model">hr.payslip.advance</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="employee_id"/>
+          <field name="date"/>
+          <field name="amount"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hr_payslip_advance" model="ir.actions.act_window">
+      <field name="name">Salary Advances</field>
+      <field name="res_model">hr.payslip.advance</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_hr_payslip_advance_root" name="Salary Advances" parent="hr.menu_hr_root"/>
+    <menuitem id="menu_hr_payslip_advance" name="Manage Advances" parent="menu_hr_payslip_advance_root" action="action_hr_payslip_advance"/>
+
+  </data>
+</openerp>
+
+
+
+<!-- <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
 		<!--Listing All Employee Advances Page-->
@@ -60,7 +133,7 @@
 			<field name="arch" type="xml">
 				<tree>
 					<field name="name"/>
-					<field name="employee_id"/>
+					<field name="employee_id" domain="[('active', '=', True)]"/>
 					<field name="date"/>
 					<field name="amount"/>
 					<field name="state"/>
@@ -125,13 +198,5 @@
 
 		<menuitem id="hr_payslip_advance_all" name="Salary Advances" parent="hr.menu_hr_main" action="hr_payslip_advance" />
 
-		<!-- <report
-            id="hr_payslip_advance_report_action"
-            model="hr.payslip.advance"
-            string="Advance Report"
-            report_type="qweb-pdf"
-            name="hr_payslip_advance.hr_payslip_advance_report"
-            file="hr_payslip_advance.hr_payslip_advance_report"
-        /> -->
 	</data>
-</openerp>
+</openerp> -->
