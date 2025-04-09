@@ -123,7 +123,7 @@ class HrPayslipAdvance(models.Model):
             repayment_lines = []
 
             # Dynamic state for line matching advance
-            valid_line_states = ['draft', 'confirmed', 'approved']
+            valid_line_states = ['draft', 'paid', 'refunded']
             line_state = advance.state if advance.state in valid_line_states else 'paid'
 
             for i in range(total_months):
