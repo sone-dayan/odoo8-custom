@@ -29,7 +29,7 @@ class HrPayslip(models.Model):
                 break
         
         return [[5, 0, 0], [0, 0, {
-            'name': 'Total en adelantos',
+            'name': 'Total Advances',
             'code': 'ADL',
             'amount': amount * -1,
             'payslip_id': self.id,

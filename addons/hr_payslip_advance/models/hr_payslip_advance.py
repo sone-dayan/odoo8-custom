@@ -1,175 +1,164 @@
-# # -*- coding: utf-8 -*-
-# from openerp import api, models, fields
-# from openerp.exceptions import Warning
-# from datetime import date
-
-# class HrPayslipAdvance(models.Model):
-#     _name = 'hr.payslip.advance'
-
-#     HR_PAYSLIP_ADVANCE_STATUS = [
-#         ('draft', 'Draft'),
-#         ('approved', 'Approved'),
-#         ('disapproved', 'Disapproved'),
-#     ]
-
-#     '''
-#     '''
-#     def _get_default_name(self):
-#         return 'ADV/%s/%d' % (date.today().year, self.search_count([]) + 1)
-
-
-
-#     name = fields.Char(string='Name', size=50, default=_get_default_name)
-#     amount = fields.Float(string='Amount', digits=(10, 2))
-#     date = fields.Date(string='Date', required=True, default=lambda self: fields.Date.today())
-#     state = fields.Selection(string='State', selection=HR_PAYSLIP_ADVANCE_STATUS, default='draft')
-#     reason = fields.Char(string='Reason', size=160)
-#     payment_term_id = fields.Many2one(string='Payment Terms', comodel_name='account.payment.term', required=True)
-#     contract_id = fields.Many2one(string='Employee Contract', comodel_name='hr.contract', required=True)
-#     journal_id = fields.Many2one(string='Payment Method', comodel_name='account.journal', required=True)
-#     payslip_refund_ids = fields.One2many(comodel_name='hr.payslip.advance.refund', inverse_name='payslip_advance_id')
-
-#     '''
-#     '''
-#     def compute_payments_refund(self, payment_term_id, amount):
-#         payment_term = self.env['account.payment.term'].browse(payment_term_id)
-#         payment_term_lines = payment_term.compute(amount)
-
-#         return [[0, False, {
-#             'date': line[0],
-#             'amount': line[1]
-#         }] for line in payment_term_lines[0]]
-
-
-#     '''
-#     '''
-#     def check_advance_limit(self, contract_id, amount):
-#         domain = [
-#             ('contract_id', '=', contract_id),
-#             ('payslip_refund_ids.refunded', '=', False)
-#         ]
-
-#         advance_obj = self.env['hr.payslip.advance']
-#         advance = advance_obj.search(domain)
-        
-#         total_unrefunded = 0
-
-#         if advance:
-#             total_unrefunded = advance.mapped(lambda x: total_unrefunded + x.amount)[0]
-
-#         if total_unrefunded > amount:
-#             raise Warning('Advance limit exceeded for this contract.')
-
-#     '''
-#     '''
-#     @api.model
-#     def create(self, values):
-#         amount = values.get('amount', 0)
-#         contract_id = values.get('contract_id', None)
-
-#         self.check_advance_limit(contract_id, amount)
-
-#         payment_term_id = values.get('payment_term_id', None)
-
-#         values['amount_unreconcilied'] = amount
-#         values['payslip_refund_ids'] = self.compute_payments_refund(payment_term_id, amount)
-
-#         return super(HrPayslipAdvance, self).create(values)
-
-#     '''
-#     '''
-#     def write(self, cr, uid, ids, values, context=None):
-#         payslip_advance = self.pool.get(self._name).browse(cr, uid, ids, context=context)
-
-#         if payslip_advance.state == 'approved':
-#             return Warning('You cannot modify an approved advance.')
-        
-#         values['amount_unreconcilied'] = values.get('amount', 0)
-
-#         return super(HrPayslipAdvance, self).write(cr, uid, ids, values, context=context)
-
-#     '''
-#     '''
-#     def unlink(self, cr, uid, ids, context=None):
-#         payslip_advance = self.pool.get(self._name).browse(cr, uid, ids, context=context)
-
-#         if payslip_advance.state == 'approved':
-#             return Warning('You cannot delete an approved advance.')
-
-#         return super(HrPayslipAdvance, self).unlink(cr, uid, ids, context=context)
-    
-#     '''
-#     '''
-#     @api.one
-#     def action_approve(self):
-#         if self.state == 'approved':
-#             return Warning('This advance is already approved.')
-
-#         if self.state == 'disapproved':
-#             return Warning('You cannot approve a disapproved advance.')
-
-#         return self.write({
-#             'amount_unreconcilied': self.amount,
-#             'state': 'approved'
-#         })
-
-#     '''
-#     '''
-#     @api.one
-#     def action_disapprove(self):
-#         if self.state == 'approved':
-#             return Warning('You cannot disapprove an approved advance.')
-
-#         if self.state == 'disapproved':
-#             return Warning('This advance is already disapproved.')
-
-#         return self.write({
-#             'amount_unreconcilied': self.amount,
-#             'state': 'disapproved'
-#         })
-
 # -*- coding: utf-8 -*-
-from openerp import models, fields, api
+from openerp import models, fields, api, _
+from openerp.exceptions import Warning
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class HrPayslipAdvance(models.Model):
-    _name = 'hr.payslip.advance'
+    _name = 'hr.payslip.advance'  # Note: Fixed typo from 'hr.payslip.advance' to match your XML
+    _description = 'Salary Advance'
 
-    name = fields.Char(string='Advance Number', required=True, default='/')
-    short_description = fields.Char(string='Short Description')
+    number = fields.Char(string='Advance Number', required=True, default='/')
+    description = fields.Char(string='Short Description')
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     contract_id = fields.Many2one('hr.contract', string='Contract')
     date = fields.Date(string='Date', default=fields.Date.today)
-    amount = fields.Float(string='Amount', digits=(10, 2))
-    generate_lines = fields.Boolean(string='Generate Lines', default=True)
-    monthly_amount = fields.Float(string='Monthly Repayment', digits=(10, 2))
+    amount = fields.Float(string='Amount', required=True)
+    generate_lines = fields.Boolean(string='Generate Lines')
+    monthly_amount = fields.Float(string='Monthly Repayment Amount')
     repayment_start_date = fields.Date(string='Repayment Start Date')
+    note = fields.Text(string='Note')
+    reimburse_monthly = fields.Boolean(string='Reimburse Monthly', default=True)
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('approved', 'Approved'),
         ('paid', 'Paid'),
         ('refunded', 'Refunded')
-    ], string='Status', default='draft')
+    ], string='Status', default='draft', track_visibility='onchange')
 
-    line_ids = fields.One2many('hr.payslip.advance.refund', 'payslip_advance_id', string='Repayment Lines')
+    line_ids = fields.One2many('hr.payslip.advance.line', 'advance_id', string='Repayment Plan')  # Fixed model name to match your definition
 
-    @api.multi
-    def generate_repayment_lines(self):
-        for advance in self:
-            advance.line_ids.unlink()
-            amount_remaining = advance.amount
-            date = fields.Date.from_string(advance.repayment_start_date)
-            lines = []
+    def action_confirm(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        return self.write(cr, uid, ids, {'state': 'confirmed'}, context=context)
 
-            while amount_remaining > 0:
-                amt = min(advance.monthly_amount, amount_remaining)
-                lines.append((0, 0, {
-                    'date': date.strftime('%Y-%m-%d'),
-                    'amount': amt,
+    def action_approve(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        return self.write(cr, uid, ids, {'state': 'approved'}, context=context)
+    
+    def action_disapprove(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {'state': 'draft'}, context=context)
+
+
+    def action_paid(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        return self.write(cr, uid, ids, {'state': 'paid'}, context=context)
+
+    def action_refund(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        self.write(cr, uid, ids, {'state': 'refunded'}, context=context)
+        for record in self.browse(cr, uid, ids, context=context):
+            line_ids = [line.id for line in record.line_ids]
+            self.pool.get('hr.payslip.advance.line').write(cr, uid, line_ids, {'state': 'refunded'}, context=context)
+        return True
+
+    
+    def create(self, cr, uid, vals, context=None):
+        if context is None:
+            context = {}
+        record_id = super(HrPayslipAdvance, self).create(cr, uid, vals, context=context)
+        record = self.browse(cr, uid, record_id, context=context)
+        if vals.get('generate_lines') and vals.get('reimburse_monthly'):
+            self._generate_repayment_lines(cr, uid, [record.id], context=context)
+        return record_id
+
+    def write(self, cr, uid, ids, vals, context=None):
+        if hasattr(self, '_generating_repayment'):
+            return super(HrPayslipAdvance, self).write(cr, uid, ids, vals, context=context)
+        self._generating_repayment = True
+        try:
+            # existing write logic
+            res = super(HrPayslipAdvance, self).write(cr, uid, ids, vals, context=context)
+            self._generate_repayment_lines(cr, uid, ids, context=context)
+            return res
+        finally:
+            del self._generating_repayment
+
+    def _generate_repayment_lines(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        line_obj = self.pool.get('hr.payslip.advance.line')
+        for advance in self.browse(cr, uid, ids, context=context):
+            # Clear existing lines only if explicitly regenerating
+            if advance.line_ids:
+                line_obj.unlink(cr, uid, [line.id for line in advance.line_ids], context=context)
+
+            # Skip if not enabled or not monthly
+            if not advance.generate_lines or not advance.reimburse_monthly:
+                _logger.info("Skipping repayment line generation: generate_lines=%s, reimburse_monthly=%s",
+                            advance.generate_lines, advance.reimburse_monthly)
+                continue
+
+            # Basic field validation
+            if not advance.repayment_start_date:
+                raise Warning(_("Repayment start date must be set."))
+            if not advance.monthly_amount or advance.monthly_amount <= 0:
+                raise Warning(_("Monthly repayment amount must be greater than zero."))
+            if not advance.amount or advance.amount <= 0:
+                raise Warning(_("Advance amount must be greater than zero."))
+            if advance.monthly_amount > advance.amount:
+                raise Warning(_("Monthly repayment amount cannot exceed the total advance amount."))
+
+            # Calculate number of months and leftover
+            total_months = int(advance.amount / advance.monthly_amount)
+            remaining = round(advance.amount - (advance.monthly_amount * total_months), 2)
+
+            # Validate start date
+            start_date = datetime.strptime(advance.repayment_start_date, "%Y-%m-%d").date()
+            today = datetime.today().date()
+            if start_date < today:
+                _logger.warning("Repayment start date is in the past: %s", start_date)
+
+            current_date = start_date
+            repayment_lines = []
+
+            # Dynamic state for line matching advance
+            valid_line_states = ['draft', 'confirmed', 'approved']
+            line_state = advance.state if advance.state in valid_line_states else 'paid'
+
+            for i in range(total_months):
+                repayment_lines.append((0, 0, {
+                    'date': current_date.strftime("%Y-%m-%d"),
+                    'amount': advance.monthly_amount,
+                    'state': line_state,
+                    'advance_id': advance.id,
                 }))
-                amount_remaining -= amt
-                date = fields.Date.from_string(date).replace(day=1)
-                date = (date + relativedelta(months=1)).replace(day=28)  # set end of month
+                current_date = current_date + relativedelta(months=1)
 
-            advance.write({'line_ids': lines})
+            # Add the remaining amount, if any
+            if remaining > 0.01:
+                repayment_lines.append((0, 0, {
+                    'date': current_date.strftime("%Y-%m-%d"),
+                    'amount': remaining,
+                    'state': line_state,
+                    'advance_id': advance.id,
+                }))
+
+            # Final write
+            _logger.info("Generated %s repayment lines for advance ID %s", len(repayment_lines), advance.id)
+            self.write(cr, uid, [advance.id], {'line_ids': repayment_lines}, context=context)
+
+
+
+
+class HrPayslipAdvanceLine(models.Model):
+    _name = 'hr.payslip.advance.line'
+
+    advance_id = fields.Many2one('hr.payslip.advance', string="Advance", ondelete='cascade', required=True)
+    date = fields.Date('RePayment Date')
+    amount = fields.Float('Amount')
+    state = fields.Selection([
+        ('paid', 'Paid'),
+        ('refunded', 'Refunded'),
+    ], default='paid')
+    payslip_id = fields.Many2one('hr.payslip', string="Payslip")

@@ -8,34 +8,47 @@
       <field name="model">hr.payslip.advance</field>
       <field name="arch" type="xml">
         <form string="Salary Advance">
-          <group>
-            <field name="name"/>
-            <field name="short_description"/>
-            <field name="employee_id"/>
-            <field name="date"/>
-            <field name="amount"/>
-            <field name="generate_lines"/>
-            <field name="monthly_amount"/>
-            <field name="repayment_start_date"/>
-          </group>
+          <header>
+            <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}"/>
+            <!-- Approve button (visible only in confirmed) -->
+            <button name="action_approve" string="Approve" type="object"
+                    attrs="{'invisible': [('state','!=','confirmed')]}"/>
 
-          <notebook>
-            <page string="Repayment Plan">
-              <field name="line_ids">
-                <tree editable="bottom">
-                  <field name="date"/>
-                  <field name="amount"/>
-                  <field name="state"/>
-                  <field name="payslip_id"/>
-                </tree>
-              </field>
-            </page>
-          </notebook>
-
-          <footer>
-            <button name="generate_repayment_lines" string="Generate Plan" type="object" class="oe_highlight"/>
-            <button string="Confirm" name="confirm" type="object" states="draft" class="oe_primary"/>
-          </footer>
+            <!-- Disapprove button (visible only in confirmed) -->
+            <button name="action_disapprove" string="Disapprove" type="object"
+                    class="btn-default"
+                    attrs="{'invisible': [('state','!=','confirmed')]}"/>
+            <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved,paid,refunded"/>
+          </header>
+          <sheet>
+            <group>
+              <group>
+                <field name="number"/>
+                <field name="description"/>
+                <field name="employee_id"/>
+                <field name="generate_lines" string="Generate Repayment Plan?"/>
+                <field name="monthly_amount" attrs="{'invisible': [('generate_lines','=',False)]}"/>
+                <field name="note" string="Note"/>
+              </group>
+              <group>
+                <field name="date"/>
+                <field name="amount"/>
+                <field name="repayment_start_date" attrs="{'invisible': [('generate_lines','=',False)]}"/>
+              </group>
+            </group>
+            <notebook>
+              <page string="REPAYMENT PLAN" attrs="{'invisible': [('generate_lines','=',False)]}">
+                <field name="line_ids" nolabel="1" context="{'default_advance_id': active_id}">
+                  <tree editable="bottom" string="Repayment Schedule">
+                      <field name="date" required="1"/>
+                      <field name="amount" required="1"/>
+                      <field name="state"/>
+                      <field name="payslip_id"/>
+                  </tree>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
         </form>
       </field>
     </record>
@@ -45,8 +58,8 @@
       <field name="name">hr.payslip.advance.tree</field>
       <field name="model">hr.payslip.advance</field>
       <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
+        <tree string="Salary Advances">
+          <field name="number"/>
           <field name="employee_id"/>
           <field name="date"/>
           <field name="amount"/>
