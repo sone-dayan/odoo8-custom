@@ -123,7 +123,7 @@ class HrPayslipAdvance(models.Model):
             repayment_lines = []
 
             # Dynamic state for line matching advance
-            valid_line_states = ['draft', 'paid', 'refunded']
+            valid_line_states = ['draft','confirmed', 'paid', 'refunded']
             line_state = advance.state if advance.state in valid_line_states else 'paid'
 
             for i in range(total_months):
@@ -158,7 +158,9 @@ class HrPayslipAdvanceLine(models.Model):
     date = fields.Date('RePayment Date')
     amount = fields.Float('Amount')
     state = fields.Selection([
+        ('draft', 'Draft'),
+        ('confirmed', 'Confirmed'),
         ('paid', 'Paid'),
         ('refunded', 'Refunded'),
-    ], default='paid')
+    ], 'State', readonly=True, default='draft')
     payslip_id = fields.Many2one('hr.payslip', string="Payslip")

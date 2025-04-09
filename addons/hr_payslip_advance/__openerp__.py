@@ -18,7 +18,7 @@
 #
 ##############################################################################
 {
-    'name': 'HR Payslip Advance',
+    'name': 'HR Payslip Advance Omamori',
     'description': 'Manage employee payslip advances',
     'author': '8Bits Software',
     'category': 'Tools',
