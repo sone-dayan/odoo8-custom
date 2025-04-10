@@ -64,6 +64,10 @@ class HrPayslipAdvance(models.Model):
         if context is None:
             context = {}
 
+        # Generate sequence if not set
+        if vals.get('number', '/') == '/':
+            vals['number'] = self.pool.get('ir.sequence').get(cr, uid, 'hr.payslip.advance')
+            
         record_id = super(HrPayslipAdvance, self).create(cr, uid, vals, context=context)
         record = self.browse(cr, uid, record_id, context=context)
 
