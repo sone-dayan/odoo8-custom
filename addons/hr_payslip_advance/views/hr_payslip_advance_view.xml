@@ -23,7 +23,7 @@
           <sheet>
             <group>
               <group>
-                <field name="number"/>
+                <field name="number" readonly="1" class="oe_readonly"/>
                 <field name="description"/>
                 <field name="employee_id"/>
                 <field name="generate_lines" string="Generate Repayment Plan?"/>
