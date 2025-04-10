@@ -33,7 +33,7 @@
               <group>
                 <field name="date"/>
                 <field name="amount"/>
-                <field name="repayment_start_date" attrs="{'invisible': [('generate_lines','=',False)]}"/>
+                <field name="repayment_start_date"/>
               </group>
             </group>
             <notebook>
