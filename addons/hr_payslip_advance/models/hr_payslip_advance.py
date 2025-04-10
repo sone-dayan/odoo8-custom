@@ -139,7 +139,9 @@ class HrPayslipAdvance(models.Model):
                     'advance_id': advance.id,
                 })
 
-            line_obj.create(cr, uid, lines_data, context=context)
+            for line_vals in lines_data:
+                line_obj.create(cr, uid, line_vals, context=context)
+
             _logger.info("Generated %s repayment lines for advance ID %s", len(lines_data), advance.id)
 
 class HrPayslipAdvanceLine(models.Model):
