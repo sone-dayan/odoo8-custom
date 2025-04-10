@@ -8,7 +8,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class HrPayslipAdvance(models.Model):
-    _name = 'hr.payslip.advance'  # Note: Fixed typo from 'hr.payslip.advance' to match your XML
+    _name = 'hr.payslip.advance'
     _description = 'Salary Advance'
 
     number = fields.Char(string='Advance Number', required=True, default='/')
@@ -31,7 +31,7 @@ class HrPayslipAdvance(models.Model):
         ('refunded', 'Refunded')
     ], string='Status', default='draft', track_visibility='onchange')
 
-    line_ids = fields.One2many('hr.payslip.advance.line', 'advance_id', string='Repayment Plan')  # Fixed model name to match your definition
+    line_ids = fields.One2many('hr.payslip.advance.line', 'advance_id', string='Repayment Plan')
 
     def action_confirm(self, cr, uid, ids, context=None):
         if context is None:
@@ -45,7 +45,6 @@ class HrPayslipAdvance(models.Model):
     
     def action_disapprove(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {'state': 'draft'}, context=context)
-
 
     def action_paid(self, cr, uid, ids, context=None):
         if context is None:
@@ -61,7 +60,6 @@ class HrPayslipAdvance(models.Model):
             self.pool.get('hr.payslip.advance.line').write(cr, uid, line_ids, {'state': 'refunded'}, context=context)
         return True
 
-    
     def create(self, cr, uid, vals, context=None):
         if context is None:
             context = {}
@@ -69,10 +67,9 @@ class HrPayslipAdvance(models.Model):
         record_id = super(HrPayslipAdvance, self).create(cr, uid, vals, context=context)
         record = self.browse(cr, uid, record_id, context=context)
 
-        # Only generate if the record has all required fields set
         if record.generate_lines and record.reimburse_monthly and \
-        record.repayment_start_date and record.monthly_amount > 0:
-            self._generate_repayment_lines(cr, uid, [record_id], context=context)
+           record.repayment_start_date and record.monthly_amount > 0:
+            self._generate_repayment_lines(cr, uid, [record_id], context=dict(context, skip_line_generation=True))
 
         return record_id
 
@@ -82,10 +79,13 @@ class HrPayslipAdvance(models.Model):
 
         res = super(HrPayslipAdvance, self).write(cr, uid, ids, vals, context=context)
 
+        if context.get('skip_line_generation'):
+            return res
+
         for record in self.browse(cr, uid, ids, context=context):
             if record.generate_lines and record.reimburse_monthly and \
-            record.repayment_start_date and record.monthly_amount > 0:
-                self._generate_repayment_lines(cr, uid, [record.id], context=context)
+               record.repayment_start_date and record.monthly_amount > 0:
+                self._generate_repayment_lines(cr, uid, [record.id], context=dict(context, skip_line_generation=True))
 
         return res
 
@@ -95,17 +95,13 @@ class HrPayslipAdvance(models.Model):
 
         line_obj = self.pool.get('hr.payslip.advance.line')
         for advance in self.browse(cr, uid, ids, context=context):
-            # Clear existing lines only if explicitly regenerating
+            # Clear existing lines
             if advance.line_ids:
                 line_obj.unlink(cr, uid, [line.id for line in advance.line_ids], context=context)
 
-            # Skip if not enabled or not monthly
+            # Validations
             if not advance.generate_lines or not advance.reimburse_monthly:
-                _logger.info("Skipping repayment line generation: generate_lines=%s, reimburse_monthly=%s",
-                            advance.generate_lines, advance.reimburse_monthly)
                 continue
-
-            # Basic field validation
             if not advance.repayment_start_date:
                 raise Warning(_("Repayment start date must be set."))
             if not advance.monthly_amount or advance.monthly_amount <= 0:
@@ -115,47 +111,36 @@ class HrPayslipAdvance(models.Model):
             if advance.monthly_amount > advance.amount:
                 raise Warning(_("Monthly repayment amount cannot exceed the total advance amount."))
 
-            # Calculate number of months and leftover
             total_months = int(advance.amount / advance.monthly_amount)
             remaining = round(advance.amount - (advance.monthly_amount * total_months), 2)
 
-            # Validate start date
             start_date = datetime.strptime(advance.repayment_start_date, "%Y-%m-%d").date()
-            today = datetime.today().date()
-            if start_date < today:
-                _logger.warning("Repayment start date is in the past: %s", start_date)
-
             current_date = start_date
-            repayment_lines = []
 
-            # Dynamic state for line matching advance
             valid_line_states = ['draft','confirmed', 'paid', 'refunded']
             line_state = advance.state if advance.state in valid_line_states else 'paid'
 
+            lines_data = []
+
             for i in range(total_months):
-                repayment_lines.append((0, 0, {
+                lines_data.append({
                     'date': current_date.strftime("%Y-%m-%d"),
                     'amount': advance.monthly_amount,
                     'state': line_state,
                     'advance_id': advance.id,
-                }))
-                current_date = current_date + relativedelta(months=1)
+                })
+                current_date += relativedelta(months=1)
 
-            # Add the remaining amount, if any
             if remaining > 0.01:
-                repayment_lines.append((0, 0, {
+                lines_data.append({
                     'date': current_date.strftime("%Y-%m-%d"),
                     'amount': remaining,
                     'state': line_state,
                     'advance_id': advance.id,
-                }))
+                })
 
-            # Final write
-            _logger.info("Generated %s repayment lines for advance ID %s", len(repayment_lines), advance.id)
-            self.write(cr, uid, [advance.id], {'line_ids': repayment_lines}, context=context)
-
-
-
+            line_obj.create(cr, uid, lines_data, context=context)
+            _logger.info("Generated %s repayment lines for advance ID %s", len(lines_data), advance.id)
 
 class HrPayslipAdvanceLine(models.Model):
     _name = 'hr.payslip.advance.line'
