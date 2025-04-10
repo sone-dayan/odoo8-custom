@@ -65,6 +65,11 @@ class HrPayslipAdvance(models.Model):
     def create(self, cr, uid, vals, context=None):
         if context is None:
             context = {}
+
+        # Generate sequence if not set
+        if vals.get('number', '/') == '/':
+            vals['number'] = self.pool.get('ir.sequence').get(cr, uid, 'hr.payslip.advance')
+
         record_id = super(HrPayslipAdvance, self).create(cr, uid, vals, context=context)
         record = self.browse(cr, uid, record_id, context=context)
         if vals.get('generate_lines') and vals.get('reimburse_monthly'):
