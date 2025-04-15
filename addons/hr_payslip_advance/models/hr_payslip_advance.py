@@ -11,7 +11,7 @@ class HrPayslipAdvance(models.Model):
     _name = 'hr.payslip.advance'
     _description = 'Salary Advance'
 
-    number = fields.Char(string='Advance Number', required=True, default='/')
+    number = fields.Char(string='Advance Number', required=True, default='/', readonly=True)
     description = fields.Char(string='Short Description')
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     contract_id = fields.Many2one('hr.contract', string='Contract')
