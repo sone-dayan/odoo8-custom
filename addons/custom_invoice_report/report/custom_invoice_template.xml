@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-<template id="report_invoice_document" inherit_id="account.report_invoice_document">
-    <t t-call ="report.external_layout">
+<template id="custom_invoice_template" inherit_id="account.report_invoice_document">
+
+    <xpath expr="//div[hasclass('page')]" position="replace">
 
         <div class="container page">
                 <style>
@@ -309,11 +310,10 @@
                             <!-- First row spanning all columns -->
                             <tr>
                                 <td colspan="4" style="background-color: #0c5d97; color: white;">
-                                    <p class="text-center">
-                                        <strong><em>
-                                            TTC : Amount FCFA
-                                        </em></strong>
-                                    </p>
+                                    <div class="text-center">
+                                        <p><strong>Amount in Words:</strong></p>
+                                        <p><span t-field="o.amount_total" t-options='{"widget": "text", "display_currency": "o.currency_id"}' /></p>
+                                    </div>
                                 </td>
                             </tr>
                             
@@ -383,7 +383,7 @@
                 
             </div>
         </div>
-    </t>
+    </xpath>
 </template>
 
 <template id="report_invoice">
