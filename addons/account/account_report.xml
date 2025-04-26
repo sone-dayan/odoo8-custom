@@ -34,8 +34,8 @@
             model="account.invoice"
             string="Invoices"
             report_type="qweb-pdf"
-            name="account.report_invoice_document"
-            file="account.report_invoice_document"
+            name="custom_invoice_report.report_invoice_template"
+            file="custom_invoice_report.report_invoice_template"
             attachment_use="True"
             attachment="(object.state in ('open','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
         />
