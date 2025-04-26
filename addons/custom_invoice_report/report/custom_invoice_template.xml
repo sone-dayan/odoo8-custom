@@ -3,7 +3,7 @@
 <data>
 <template id="custom_invoice_template" inherit_id="account.report_invoice">
 
-    <xpath expr="//t[@t-call='report.external_layout']" position="replace">
+    
         <t t-call="report.external_layout">
 
             <div class="container page">
@@ -385,7 +385,6 @@
                 </div>
             </div>
         </t>
-    </xpath>
     
 </template>
 
