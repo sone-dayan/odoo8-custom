@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<template id="report_invoice_document">
+    <t t-call ="report.external_layout">
+
+        <div class="container page">
+                <style>
+                        .page {
+                            font-family: 'Arial', sans-serif;
+                            font-size: 12px;
+                            text-align: center;
+                        }
+
+                        h2{
+                            font-size: 20px;
+                            font-weight: bold;
+                            text-align: center;
+                            color: #0c5d97;
+                        }
+                        .company-name {
+                            font-weight: bold;
+                            font-size: 40px;
+                            color: #0c5d97;
+                            text-transform: uppercase;
+                            margin-bottom: 20px;
+                            margin-top: 20px;
+                        }
+                        .partner-address {
+                            font-size: 12px;
+                            color: #666;
+                        }
+
+                        .table {
+                            width: 100%;
+                        
+                        }
+
+                        .main-table tr:nth-child(odd) {
+                            background-color:#c4daea;
+                        }
+                        .main-table tr:nth-child(even) {
+                            background-color:rgb(255, 255, 255);
+                        }
+
+                        th {
+                            background-color: #0c5d97;
+                            color: white;
+                        }
+
+                        .table-bordered th, .table-bordered td {
+                            border: 3px solid #000;
+                            padding: 6px;
+                            text-align: center;
+                        }
+
+                        .table-condensed th,
+                        .table-condensed td {
+                            border: 3px solid #000;
+                            padding: 6px;
+                        }
+
+                        .text-right {
+                            text-align: right;
+                        }
+
+                        .text-center {
+                            text-align: center;
+                        }
+
+                        p {
+                            margin: 5px 0;
+                        }
+
+                        .summary-table {
+                            border: 3px solid #000;
+                            width: 30%;
+                            float: right;
+                        }
+
+                        .table-1{
+                            width: 30%;
+                            border: none !important;
+                            border-collapse: collapse !important;
+                            border-spacing: 0 !important;
+                            outline: 0 !important;
+                        }
+                        
+                        .first-table{
+                            font-size: 20px;
+                            width: 100%;
+                            border: none;
+                            border-collapse: collapse;
+                        }
+
+
+                        .first-table td:first-child{
+                            border: 3px solid #000 !important;
+                        }
+
+                        
+                        .main-table{
+                            border: 3px solid #000;
+                        }
+
+                        .footer{
+                            text-align: left;
+                        }
+                        
+                    </style>
+            <div class="container">
+                <div class="row">
+                    <div class="text-center">
+                        <!-- <address t-field="o.partner_id"
+                            t-field-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}' /> -->
+                            <h2 t-field="o.partner_id.commercial_partner_id.name" class="company-name" />
+
+                    </div>
+                </div>
+                <div class="row text-center align-items-right">
+                    <div class="col-md-6 invoice-header">
+                        <table class="table table-1">
+                            <tr>
+                                <td style="border: none;">
+                                    <strong>
+                                        Invoice Number
+                                    </strong>
+                                </td>
+                                <td style="border: none;">
+                                    <strong>
+                                        <span t-field="o.number"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none;">
+                                    <strong>
+                                        PO Reference
+                                    </strong>
+                                </td>
+                                <td style="border: none;">
+                                    <strong>
+                                        <span t-field="o.reference"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none;">
+                                    <strong>
+                                        Date
+                                    </strong>
+                                </td>
+                                <td style="border: none;">
+                                    <strong>
+                                        <span t-field="o.date_invoice" t-field-options='{"widget": "date"}'/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="logo">
+                            <t t-if="o.partner_id.is_company and o.partner_id.image">
+                                <!-- Show customer company logo -->
+                                <img t-att-src="'data:image/png;base64,%s' % o.partner_id.image"
+                                    style="max-height: 150px; max-width: 100%; height: auto;"
+                                    alt="Customer Company Logo"/>
+                            </t>
+                            
+                        </div>
+                    </div>
+                </div>
+                <table class="table first-table">
+                        <tr>
+                            <td >
+                                <strong>
+                                Customer details
+                                </strong>
+                            </td>
+                            <td style="border: none;">
+                                <strong>
+                                    <span t-field="o.partner_id.commercial_partner_id.name"/>
+                                </strong>
+                                <br/>
+                                <strong>
+                                    <span t-field="o.partner_id.contact_address" class="partner-address" />
+                                </strong>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td>
+                                <strong>
+                                Invoice details
+                                </strong>
+                            </td>
+                            <td style="background-color:#c4daea; width: 70%; height: 100px; padding: 5px;">
+                                <strong>
+                                    <span t-field="o.comment" t-field-options='{"widget": "html"}' style="display: inline-block; max-height: 90px; overflow: hidden;"/>
+                                </strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>
+                                BUYER
+                                </strong>
+                            </td>
+                            <td>
+                                <strong>
+                                    <span t-field="o.partner_id.name"/>
+                                </strong>
+                            </td>
+                        </tr>
+                </table>
+                <table class="table table-condensed table-bordered text-center second-table" >
+                    <thead>
+                        <tr>
+                            <th>Salesperson</th>
+                            <th>Contact</th>
+                            <th>Payment Terms</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span t-field="o.user_id"/></td>
+                            <td><span t-field="o.partner_id.name"/></td>
+                            <td><span t-field="o.payment_term"/></td>
+                            <td><span t-field="o.date_due"/></td>
+                        </tr>
+                        <tr>
+                            <td>DELIVERY</td>
+                            <td>30 Days after Notification</td>    
+                        </tr>
+                        
+                    </tbody>
+                </table>
+
+                
+                <div class="text-center">
+                    <em class="text-center text-underline">Scope:</em>
+
+                    <br/>
+
+                    <em>Learn, Prepare and Support Contractualization</em>
+                </div>
+
+                <table class="table table-condensed table-bordered text-center main-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Description</th>
+                            <th class="text-right">Unit Price</th>
+                            <th>Quantity</th>
+                            <th class="text-right" groups="sale.group_discount_per_so_line">Discount (%)</th>
+                            <th class="text-right">Taxes</th>
+                            <th class="text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="invoice_tbody">
+                        <tr t-foreach="o.invoice_line" t-as="l">
+                            <td>
+                                <span t-field="l.product_id"/>
+                            </td>
+                            <td><span t-field="l.name"/></td>
+                            <td>
+                                <span t-field="l.quantity"/>
+                                <span t-field="l.uos_id"  groups="product.group_uom"/>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="l.price_unit"/>
+                            </td>
+                            <td class="text-right" groups="sale.group_discount_per_so_line"><span t-field="l.discount"/></td>
+                            <td class="text-right">
+                                <span t-esc="', '.join(map(lambda x: x.name, l.invoice_line_tax_id))"/>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="l.price_subtotal" 
+                                    t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-condensed table-bordered summary-table col-xs-4 pull-right main-table">
+                            <tr class="border-black">
+                                <td><strong>Total Without Taxes</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_untaxed" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>VA Tax</td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_tax" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td><strong>TTC</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_total" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                            </tr>
+                            
+                </table>
+
+                <div class="container">
+                    <table class="table table-bordered main-table">
+                        <tbody>
+                            <!-- First row spanning all columns -->
+                            <tr>
+                                <td colspan="4" style="background-color: #0c5d97; color: white;">
+                                    <p class="text-center">
+                                        <strong><em>
+                                            TTC : Amount FCFA
+                                        </em></strong>
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                            <!-- Second row spanning all columns -->
+                            <tr>
+                                <td colspan="4">
+                                    <p class="text-center">
+                                        <strong>BLUE OCEAN GROUP : RC/DLA/2017/B/2871 N° Contrib : M061712638229P</strong>
+                                        <br/>
+                                        <strong>Bank account Number AFRILAND FIRST BANK : 10000-00000-00008281001-37</strong>
+                                        <br/>
+                                        <strong>Code marchand: #150*47*813868# nom: BLUE OCEAN GROUP SARL</strong>                     
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                            <!-- Third row with 3 columns -->
+                            <tr>
+                                <td>
+                                    <p class="text-center">
+                                        Tel <br/> <a class="oe_phone_link"> <span t-field="o.partner_id.phone"/> </a>
+                                    </p>
+                                </td>
+                                <td>
+                                    <p class="text-center">
+                                        <strong>E-mail Address</strong>
+                                        <br/> 
+                                        <a href="mailto:contact@company.com" class="oe_email_link">
+                                            <span t-field="o.partner_id.email" />
+                                        </a>
+                                    </p>
+                                </td>
+                                <td>
+                                    <p class="text-center">
+                                        <strong>Website</strong>
+                                        <br/> 
+                                        <a href="http://www.company.com" class="oe_website_link">
+                                            <span t-field="o.partner_id.website" />
+                                        </a>
+                                    </p>
+                                </td>
+                                <td>
+                                    <p class="text-center">
+                                    <strong>BP:</strong> <br/>
+                                    <span t-esc="o.partner_id.contact_address" class="partner-address" />
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="footer">
+                    <div t-if="o.company_id">
+                    <strong>Director General</strong>
+                    <span t-field="o.partner_id.name"/>
+                    </div>
+                    <div class="signature text-center">
+                        <p>Signature</p>
+                    </div>
+                    <div t-if="o.partner_id">
+                        <strong>Company Name</strong>
+                        <span t-field="o.partner_id.commercial_partner_id.name" class="company-name-footer" />
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </t>
+</template>
+
+<template id="report_invoice">
+    <t t-call="report.html_container">
+        <t t-foreach="doc_ids" t-as="doc_id">
+            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'account.report_invoice_document')"/>
+        </t>
+    </t>
+</template>
+</data>
+</openerp>
