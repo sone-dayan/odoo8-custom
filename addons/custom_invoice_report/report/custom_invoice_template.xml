@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-<template id="custom_invoice_template" inherit_id="account.report_invoice_document">
+<template id="custom_invoice_template" inherit_id="account.report_invoice">
 
     <xpath expr="//div[hasclass('page')]" position="replace">
 
@@ -389,7 +389,7 @@
 <template id="report_invoice">
     <t t-call="report.html_container">
         <t t-foreach="doc_ids" t-as="doc_id">
-            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'custom_report_invoice.report_invoice_document')"/>
+            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'custom_report_invoice.report_invoice_template')"/>
         </t>
     </t>
 </template>
