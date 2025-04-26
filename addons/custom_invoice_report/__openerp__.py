@@ -11,7 +11,7 @@ Custom Invoice Report Template
 This module customizes the invoice report layout.
 """,
     'data': [
-        'report/custom_invoice_templates.xml',
+        'report/custom_invoice_template.xml',
     ],
     'installable': True,
     'application': False,
