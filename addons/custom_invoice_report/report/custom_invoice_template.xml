@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-<template id="custom_invoice_template" inherit_id="account.report_invoice">
+<template id="custom_invoice_template" >
 
     
-        <t t-call="report.external_layout">
+        <t t-call="report.html_container">
 
             <div class="container page">
                     <style>
