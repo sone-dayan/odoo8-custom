@@ -1,17 +1,16 @@
 <openerp>
     <data>
 
-        <!-- New Report Action -->
-        <report
-            id="account_invoices"
-            model="account.invoice"
-            string="Custom Invoice"
-            report_type="qweb-pdf"
-            name="custom_invoice_report.custom_invoice_report"
-            file="custom_invoice_report.custom_invoice_report"
-            attachment_use="True"
-            attachment="(object.state in ('open','paid')) and ('CUSTINV'+(object.number or '').replace('/','')+'.pdf')"
-        />
+        <!-- Override default Invoice Report -->
+        <record id="account_invoices" model="ir.actions.report.xml">
+            <field name="name">Custom Invoice</field>
+            <field name="model">account.invoice</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_invoice_report.custom_invoice_report</field>
+            <field name="report_file">custom_invoice_report.custom_invoice_report</field>
+            <field name="attachment_use">True</field>
+            <field name="attachment">(object.state in ('open','paid')) and ('CUSTINV'+(object.number or '').replace('/','')+'.pdf')</field>
+        </record>
 
     </data>
 </openerp>
