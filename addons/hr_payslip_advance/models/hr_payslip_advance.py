@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning
+from openerp.osv import orm
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
@@ -64,9 +65,14 @@ class HrPayslipAdvance(models.Model):
         if context is None:
             context = {}
 
-        # Generate sequence if not set
-        if vals.get('number', '/') == '/':
-            vals['number'] = self.pool.get('ir.sequence').get(cr, uid, 'salary.advance')
+        if not vals.get('number') or vals.get('number') == '/':
+            sequence = self.pool.get('ir.sequence').get(cr, uid, 'salary.advance', context=context)
+            if not sequence:
+                raise orm.except_orm(
+                    _('Error!'),
+                    _('The sequence "salary.advance" is missing.\nPlease configure it in Settings > Technical > Sequences.')
+                )
+            vals['number'] = sequence
 
         record_id = super(HrPayslipAdvance, self).create(cr, uid, vals, context=context)
         record = self.browse(cr, uid, record_id, context=context)
@@ -76,6 +82,7 @@ class HrPayslipAdvance(models.Model):
             self._generate_repayment_lines(cr, uid, [record_id], context=dict(context, skip_line_generation=True))
 
         return record_id
+
 
     def write(self, cr, uid, ids, vals, context=None):
         if context is None:
