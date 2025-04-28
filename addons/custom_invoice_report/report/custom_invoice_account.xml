@@ -2,7 +2,7 @@
     <data>
         <!-- Override the original invoice report -->
         <report 
-            id="account.account_invoices"  <!-- This ID overrides the original -->
+            id="account.account_invoices"
             model="account.invoice"
             string="Invoice"
             report_type="qweb-pdf"
