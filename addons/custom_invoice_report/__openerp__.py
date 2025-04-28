@@ -12,7 +12,7 @@ This module customizes the invoice report layout.
 """,
     'data': [
         'report/custom_invoice_report.xml',
-        'report/custom_invoice_template.xml',
+        'report/custom_invoice_account.xml',
     ],
     'installable': True,
     'application': False,
